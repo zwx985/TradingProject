@@ -21,16 +21,16 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     public List<TradeResponse> allList() {
-        log.info("开始查询全部交易记录");
+        log.info("Start querying all trade records");
         List<TradeEntity> entityList = tradeMapper.allList();
         if (entityList == null || entityList.isEmpty()) {
-            log.warn("未查询到交易记录");
+            log.warn("No trade records found");
             return Collections.emptyList();
         }
         List<TradeResponse> result = entityList.stream()
                 .map(TradeConverter::toResponse)
                 .toList();
-        log.info("查询到 {} 条交易记录", result.size());
+        log.info("Found {} trade records", result.size());
         return result;
     }
 

@@ -12,5 +12,4 @@ public interface TradeService {
      * @return 交易记录列表
      */
     List<TradeResponse> allList();
-
 }

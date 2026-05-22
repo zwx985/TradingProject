@@ -21,8 +21,7 @@ public class TradeController {
 
     @GetMapping("/all-list")
     public Response<List<TradeResponse>> allList() {
-        log.info("查询全部交易记录");
+        log.info("Query all trade records");
         return Response.success(tradeService.allList());
     }
-
 }
