@@ -1,8 +1,8 @@
 package com.laoz.trading.project.service;
 
 import com.laoz.trading.project.dto.TradeAddRequest;
+import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
-import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.dto.TradeUpdateRequest;
 
@@ -19,9 +19,9 @@ public interface TradeService {
      * Query all trade records
      * 查询全部交易记录
      *
-     * @return list of trade responses 交易响应列表
+     * @return all list response including total count 包含总条数的全部记录响应
      */
-    List<TradeResponse> allList();
+    TradeAllListResponse allList();
 
     /**
      * Add a new trade record

@@ -2,8 +2,8 @@ package com.laoz.trading.project.controller;
 
 import com.laoz.trading.project.common.response.Response;
 import com.laoz.trading.project.dto.TradeAddRequest;
+import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
-import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.dto.TradeUpdateRequest;
 import com.laoz.trading.project.service.TradeService;
@@ -34,13 +34,13 @@ public class TradeController {
     private TradeService tradeService;
 
     /**
-     * Query all trade records
-     * 查询全部交易记录
+     * Query all trade records with total count
+     * 查询全部交易记录（包含总条数）
      *
-     * @return list of trade responses 交易响应列表
+     * @return all list response including total count 包含总条数的全部记录响应
      */
     @GetMapping("/all-list")
-    public Response<List<TradeResponse>> allList() {
+    public Response<TradeAllListResponse> allList() {
         log.info("Query all trade records");
         return Response.success(tradeService.allList());
     }

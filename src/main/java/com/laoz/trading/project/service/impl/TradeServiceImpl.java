@@ -2,6 +2,7 @@ package com.laoz.trading.project.service.impl;
 
 import com.laoz.trading.project.converter.TradeConverter;
 import com.laoz.trading.project.dto.TradeAddRequest;
+import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
 import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
@@ -31,18 +32,18 @@ public class TradeServiceImpl implements TradeService {
     private TradeMapper tradeMapper;
 
     @Override
-    public List<TradeResponse> allList() {
+    public TradeAllListResponse allList() {
         log.info("Start querying all trade records");
         List<TradeEntity> entityList = tradeMapper.allList();
         if (entityList == null || entityList.isEmpty()) {
             log.warn("No trade records found");
-            return Collections.emptyList();
+            return new TradeAllListResponse(Collections.emptyList(), 0L);
         }
         List<TradeResponse> result = entityList.stream()
                 .map(TradeConverter::toResponse)
                 .toList();
         log.info("Found {} trade records", result.size());
-        return result;
+        return new TradeAllListResponse(result, result.size());
     }
 
     @Override
