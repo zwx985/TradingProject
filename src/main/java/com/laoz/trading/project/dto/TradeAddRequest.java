@@ -3,7 +3,7 @@ package com.laoz.trading.project.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Trade Add Request DTO
@@ -23,6 +23,6 @@ public class TradeAddRequest {
      * Creation time (optional, defaults to current time if not provided)
      * 创建时间（可选，未传则使用当前时间）
      */
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
 }

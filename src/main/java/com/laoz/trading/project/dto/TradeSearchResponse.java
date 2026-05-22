@@ -1,7 +1,5 @@
-package com.laoz.trading.project.entity;
+package com.laoz.trading.project.dto;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,21 +9,19 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * Trade Entity - Maps to T_TRADE table
- * 交易实体类 - 映射 T_TRADE 数据表
+ * Trade Search Response DTO
+ * 交易搜索响应数据传输对象
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("T_TRADE")
-public class TradeEntity {
+public class TradeSearchResponse {
 
     /**
      * Primary key ID
      * 主键ID
      */
-    @TableId(value = "id")
     private String id;
 
     /**
@@ -35,14 +31,14 @@ public class TradeEntity {
     private BigDecimal amount;
 
     /**
-     * Creation time
-     * 创建时间
+     * Creation date
+     * 创建日期
      */
     private LocalDate createTime;
 
     /**
-     * Update time
-     * 更新时间
+     * Update date
+     * 更新日期
      */
     private LocalDate updateTime;
 

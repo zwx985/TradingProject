@@ -2,6 +2,7 @@ package com.laoz.trading.project.converter;
 
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeResponse;
+import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.entity.TradeEntity;
 
 import java.math.BigDecimal;
@@ -30,6 +31,25 @@ public class TradeConverter {
             return null;
         }
         return TradeResponse.builder()
+                .id(entity.getId())
+                .amount(entity.getAmount())
+                .createTime(entity.getCreateTime())
+                .updateTime(entity.getUpdateTime())
+                .build();
+    }
+
+    /**
+     * Convert entity to search response DTO
+     * 将实体对象转换为搜索响应 DTO
+     *
+     * @param entity trade entity 交易实体
+     * @return trade search response DTO, returns null when entity is null 交易搜索响应 DTO，entity 为 null 时返回 null
+     */
+    public static TradeSearchResponse toSearchResponse(TradeEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return TradeSearchResponse.builder()
                 .id(entity.getId())
                 .amount(entity.getAmount())
                 .createTime(entity.getCreateTime())

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * Trade Response DTO
@@ -34,12 +34,12 @@ public class TradeResponse {
      * Creation time
      * 创建时间
      */
-    private LocalDateTime createTime;
+    private LocalDate createTime;
 
     /**
      * Update time
      * 更新时间
      */
-    private LocalDateTime updateTime;
+    private LocalDate updateTime;
 
 }

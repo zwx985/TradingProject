@@ -8,5 +8,36 @@
                create_time,
                update_time
         from T_TRADE
+        order by create_time
+    </select>
+
+    <select id="sum" resultType="java.math.BigDecimal">
+        select sum(amount)
+        from T_TRADE
+    </select>
+
+    <select id="search" resultType="com.laoz.trading.project.entity.TradeEntity">
+        select id,
+               amount,
+               create_time,
+               update_time
+        from T_TRADE
+        <where>
+            <if test="request.id != null and request.id != ''">
+                and id = #{request.id}
+            </if>
+            <if test="request.amount != null">
+                and amount = #{request.amount}
+            </if>
+            <if test="request.createTime != null">
+                and create_time = #{request.createTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByCreateTime" resultType="java.lang.Long">
+        select count(*)
+        from T_TRADE
+        where create_time = #{createTime}
     </select>
 </mapper>

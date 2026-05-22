@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Response<Void> handleException(Exception e) {
         log.error("System exception: {}", e.getMessage(), e);
-        return Response.error("System is busy, please try again later");
+        return Response.error(e.getMessage());
     }
 
 }

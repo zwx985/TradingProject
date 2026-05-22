@@ -2,7 +2,10 @@ package com.laoz.trading.project.service.impl;
 
 import com.laoz.trading.project.converter.TradeConverter;
 import com.laoz.trading.project.dto.TradeAddRequest;
+import com.laoz.trading.project.dto.TradeQueryRequest;
 import com.laoz.trading.project.dto.TradeResponse;
+import com.laoz.trading.project.dto.TradeSearchResponse;
+import com.laoz.trading.project.dto.TradeUpdateRequest;
 import com.laoz.trading.project.entity.TradeEntity;
 import com.laoz.trading.project.mapper.TradeMapper;
 import com.laoz.trading.project.service.TradeService;
@@ -11,7 +14,8 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,13 +48,69 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public String add(TradeAddRequest request) {
         log.info("Start adding trade record");
+        LocalDate createTime = request.getCreateTime() != null ? request.getCreateTime() : LocalDate.now();
+
+        long count = tradeMapper.countByCreateTime(createTime);
+        if (count > 0) {
+            log.warn("Trade record already exists for date: {}", createTime);
+            throw new IllegalStateException("A trade record already exists for this date");
+        }
+
         TradeEntity entity = TradeConverter.toEntity(request);
         entity.setId(IDUtils.uuid());
-        entity.setCreateTime(entity.getCreateTime() != null ? entity.getCreateTime() : LocalDateTime.now());
-        entity.setUpdateTime(LocalDateTime.now());
+        entity.setCreateTime(createTime);
+        entity.setUpdateTime(LocalDate.now());
         tradeMapper.insert(entity);
         log.info("Trade record added successfully, id: {}", entity.getId());
         return entity.getId();
+    }
+
+    @Override
+    public BigDecimal sum() {
+        log.info("Start calculating total trade amount");
+        BigDecimal total = tradeMapper.sum();
+        if (total == null) {
+            total = BigDecimal.ZERO;
+        }
+        log.info("Total trade amount: {}", total);
+        return total;
+    }
+
+    @Override
+    public List<TradeSearchResponse> search(TradeQueryRequest request) {
+        log.info("Start searching trade records with conditions");
+        List<TradeEntity> entityList = tradeMapper.search(request);
+        if (entityList == null || entityList.isEmpty()) {
+            log.warn("No trade records match the search criteria");
+            return Collections.emptyList();
+        }
+        List<TradeSearchResponse> result = entityList.stream()
+                .map(TradeConverter::toSearchResponse)
+                .toList();
+        log.info("Found {} trade records matching the criteria", result.size());
+        return result;
+    }
+
+    @Override
+    public String update(TradeUpdateRequest request) {
+        log.info("Start updating trade record, id: {}", request.getId());
+        TradeEntity entity = tradeMapper.selectById(request.getId());
+        if (entity == null) {
+            log.warn("Trade record not found, id: {}", request.getId());
+            throw new IllegalArgumentException("Trade record not found");
+        }
+        entity.setAmount(new BigDecimal(request.getAmount()));
+        entity.setUpdateTime(LocalDate.now());
+        tradeMapper.updateById(entity);
+        log.info("Trade record updated successfully, id: {}", entity.getId());
+        return entity.getId();
+    }
+
+    @Override
+    public void delete(String id) {
+        log.info("Start deleting trade record, id: {}", id);
+        tradeMapper.deleteById(id);
+        log.info("Trade record deleted successfully, id: {}", id);
     }
 
 }
