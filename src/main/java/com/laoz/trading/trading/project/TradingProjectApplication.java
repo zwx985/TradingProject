@@ -1,4 +1,4 @@
-package com.laoz.trading.tradingproject;
+package com.laoz.trading.trading.project;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.laoz.trading.tradingproject;
+package com.laoz.trading.trading.project;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
