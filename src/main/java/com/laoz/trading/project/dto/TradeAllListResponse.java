@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -16,15 +17,21 @@ import java.util.List;
 public class TradeAllListResponse {
 
     /**
-     * Trade record list
-     * 交易记录列表
-     */
-    private List<TradeResponse> records;
-
-    /**
      * Total number of records
      * 记录总条数
      */
     private long totalCount;
+
+    /**
+     * Total sum
+     * 总和
+     */
+    private BigDecimal totalAmount;
+
+    /**
+     * Trade record list
+     * 交易记录列表
+     */
+    private List<TradeResponse> records;
 
 }

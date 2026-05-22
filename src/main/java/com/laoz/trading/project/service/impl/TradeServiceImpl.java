@@ -37,13 +37,13 @@ public class TradeServiceImpl implements TradeService {
         List<TradeEntity> entityList = tradeMapper.allList();
         if (entityList == null || entityList.isEmpty()) {
             log.warn("No trade records found");
-            return new TradeAllListResponse(Collections.emptyList(), 0L);
+            return new TradeAllListResponse(0L, BigDecimal.ZERO, Collections.emptyList());
         }
         List<TradeResponse> result = entityList.stream()
                 .map(TradeConverter::toResponse)
                 .toList();
         log.info("Found {} trade records", result.size());
-        return new TradeAllListResponse(result, result.size());
+        return new TradeAllListResponse(result.size(), sum(), result);
     }
 
     @Override
