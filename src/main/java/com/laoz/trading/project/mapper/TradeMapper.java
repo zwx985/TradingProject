@@ -20,5 +20,4 @@ public interface TradeMapper extends BaseMapper<TradeEntity> {
      * @return list of trade entities 交易实体列表
      */
     List<TradeEntity> allList();
-
 }
