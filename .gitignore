@@ -1,0 +1,24 @@
+### Java ###
+*.class
+*.jar
+*.war
+target/
+
+### IDE ###
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+
+### Logs ###
+*.log
+
+### OS generated files ###
+.DS_Store
+Thumbs.db
+
+### Application Config ###
+application-dev.yml
+application-prod.yml
