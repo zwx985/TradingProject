@@ -4,7 +4,9 @@ import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.entity.TradeEntity;
 
 /**
- * 交易对象转换器
+ * Trade Object Converter
+ * Utility class for converting between Entity and DTO
+ * 交易对象转换器 - 实体与 DTO 之间的转换工具类
  */
 public class TradeConverter {
 

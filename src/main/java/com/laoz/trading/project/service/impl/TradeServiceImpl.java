@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Trade Service Implementation
+ * 交易服务实现类
+ */
 @Slf4j
 @Service
 public class TradeServiceImpl implements TradeService {

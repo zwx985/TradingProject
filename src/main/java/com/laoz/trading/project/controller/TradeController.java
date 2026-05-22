@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * Trade REST API Controller
+ * 交易 REST API 控制器
+ */
 @Slf4j
 @RestController
 @RequestMapping("/v1/trade-project")
@@ -19,6 +23,12 @@ public class TradeController {
     @Resource
     private TradeService tradeService;
 
+    /**
+     * Query all trade records
+     * 查询全部交易记录
+     *
+     * @return list of trade responses 交易响应列表
+     */
     @GetMapping("/all-list")
     public Response<List<TradeResponse>> allList() {
         log.info("Query all trade records");
