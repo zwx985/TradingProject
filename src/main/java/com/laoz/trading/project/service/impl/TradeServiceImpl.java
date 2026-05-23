@@ -114,4 +114,17 @@ public class TradeServiceImpl implements TradeService {
         log.info("Trade record deleted successfully, id: {}", id);
     }
 
+    @Override
+    public TradeResponse today() {
+        LocalDate createTime = LocalDate.now();
+        TradeQueryRequest tradeQueryRequest = new TradeQueryRequest();
+        tradeQueryRequest.setCreateTime(createTime);
+        List<TradeEntity> search = tradeMapper.search(tradeQueryRequest);
+        if (search == null || search.isEmpty()) {
+            log.warn("No trade records found");
+            return null;
+        }
+        return TradeConverter.toResponse(search.getFirst());
+    }
+
 }

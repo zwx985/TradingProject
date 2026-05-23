@@ -3,6 +3,7 @@ package com.laoz.trading.project.service;
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
+import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.dto.TradeUpdateRequest;
 
@@ -66,4 +67,11 @@ public interface TradeService {
      */
     void delete(String id);
 
+    /**
+     * Query today trade record
+     * 获取当日交易记录
+     *
+     * @return response 响应
+     */
+    TradeResponse today();
 }

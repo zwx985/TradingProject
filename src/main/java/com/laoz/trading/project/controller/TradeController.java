@@ -4,6 +4,7 @@ import com.laoz.trading.project.common.response.Response;
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
+import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.dto.TradeUpdateRequest;
 import com.laoz.trading.project.service.TradeService;
@@ -77,8 +78,8 @@ public class TradeController {
      * @param request query conditions 查询条件
      * @return list of matched trade search responses 匹配的交易搜索响应列表
      */
-    @GetMapping("/search")
-    public Response<List<TradeSearchResponse>> search(TradeQueryRequest request) {
+    @PostMapping("/search")
+    public Response<List<TradeSearchResponse>> search(@RequestBody TradeQueryRequest request) {
         log.info("Search trade records");
         return Response.success(tradeService.search(request));
     }
@@ -110,4 +111,15 @@ public class TradeController {
         return Response.success();
     }
 
+    /**
+     * Query today trade record
+     * 获取当日交易
+     *
+     * @return response 响应
+     */
+    @GetMapping("/today")
+    public Response<TradeResponse> today() {
+        log.info("get today trade records");
+        return Response.success(tradeService.today());
+    }
 }
