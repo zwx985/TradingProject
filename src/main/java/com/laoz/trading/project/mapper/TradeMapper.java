@@ -19,7 +19,7 @@ public interface TradeMapper extends BaseMapper<TradeEntity> {
 
     /**
      * Query all trade records
-     * 查询全部交易记录
+     * 查询全部交易记录 - 根据创建时间倒序
      *
      * @return list of trade entities 交易实体列表
      */

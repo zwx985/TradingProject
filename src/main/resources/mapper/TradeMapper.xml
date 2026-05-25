@@ -8,7 +8,7 @@
                create_time,
                update_time
         from T_TRADE
-        order by create_time
+        order by create_time desc
     </select>
 
     <select id="sum" resultType="java.math.BigDecimal">
@@ -33,6 +33,21 @@
                 and create_time = #{request.createTime}
             </if>
         </where>
+        ORDER BY
+        <choose>
+            <when test="request.amountSort != null and request.amountSort != ''">
+                amount ${request.amountSort}
+            </when>
+            <when test="request.createTimeSort != null and request.createTimeSort != ''">
+                create_time ${request.createTimeSort}
+            </when>
+            <when test="request.updateTimeSort != null and request.updateTimeSort != ''">
+                update_time ${request.updateTimeSort}
+            </when>
+            <otherwise>
+                create_time DESC
+            </otherwise>
+        </choose>
     </select>
 
     <select id="countByCreateTime" resultType="java.lang.Long">

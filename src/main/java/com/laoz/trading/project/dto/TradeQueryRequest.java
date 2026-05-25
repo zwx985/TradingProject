@@ -30,4 +30,21 @@ public class TradeQueryRequest {
      */
     private LocalDate createTime;
 
+    /**
+     * Sort by amount, value: asc or desc
+     * 根据金额排序，取值：asc（升序）或 desc（降序）
+     */
+    private String amountSort;
+
+    /**
+     * Sort by createTime, value: asc or desc
+     * 根据创建时间排序，取值：asc（升序）或 desc（降序）
+     */
+    private String createTimeSort;
+
+    /**
+     * Sort by updateTime, value: asc or desc
+     * 根据更新时间排序，取值：asc（升序）或 desc（降序）
+     */
+    private String updateTimeSort;
 }

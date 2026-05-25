@@ -18,7 +18,7 @@ public interface TradeService {
 
     /**
      * Query all trade records
-     * 查询全部交易记录
+     * 查询全部交易记录  - 根据创建时间倒序
      *
      * @return all list response including total count 包含总条数的全部记录响应
      */
