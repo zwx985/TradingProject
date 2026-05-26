@@ -1,5 +1,8 @@
 package com.laoz.trading.project.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.laoz.trading.project.common.request.PageRequest;
+import com.laoz.trading.project.common.response.PageResult;
 import com.laoz.trading.project.converter.TradeConverter;
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeAllListResponse;
@@ -11,8 +14,11 @@ import com.laoz.trading.project.entity.TradeEntity;
 import com.laoz.trading.project.mapper.TradeMapper;
 import com.laoz.trading.project.service.TradeService;
 import com.laoz.trading.project.util.IDUtils;
+
 import jakarta.annotation.Resource;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -78,18 +84,19 @@ public class TradeServiceImpl implements TradeService {
     }
 
     @Override
-    public List<TradeSearchResponse> search(TradeQueryRequest request) {
+    public PageResult<TradeSearchResponse> search(PageRequest<TradeQueryRequest> pageRequest) {
         log.info("Start searching trade records with conditions");
-        List<TradeEntity> entityList = tradeMapper.search(request);
-        if (entityList == null || entityList.isEmpty()) {
-            log.warn("No trade records match the search criteria");
-            return Collections.emptyList();
-        }
-        List<TradeSearchResponse> result = entityList.stream()
+        long current = pageRequest.getPageIndex() != null ? pageRequest.getPageIndex() : 1;
+        long size = pageRequest.getPageSize() != null ? pageRequest.getPageSize() : 10;
+        Page<TradeEntity> page = new Page<>(current, size);
+
+        Page<TradeEntity> resultPage = tradeMapper.search(page, pageRequest.getRequest());
+        List<TradeSearchResponse> records = resultPage.getRecords().stream()
                 .map(TradeConverter::toSearchResponse)
                 .toList();
-        log.info("Found {} trade records matching the criteria", result.size());
-        return result;
+
+        log.info("Found {} trade records matching the criteria", resultPage.getTotal());
+        return new PageResult<>(records, resultPage.getTotal(), resultPage.getCurrent(), resultPage.getSize(), resultPage.getPages());
     }
 
     @Override
@@ -119,12 +126,13 @@ public class TradeServiceImpl implements TradeService {
         LocalDate createTime = LocalDate.now();
         TradeQueryRequest tradeQueryRequest = new TradeQueryRequest();
         tradeQueryRequest.setCreateTime(createTime);
-        List<TradeEntity> search = tradeMapper.search(tradeQueryRequest);
-        if (search == null || search.isEmpty()) {
+        Page<TradeEntity> page = new Page<>(1, 1);
+        Page<TradeEntity> result = tradeMapper.search(page, tradeQueryRequest);
+        if (result.getRecords() == null || result.getRecords().isEmpty()) {
             log.warn("No trade records found");
             return null;
         }
-        return TradeConverter.toResponse(search.getFirst());
+        return TradeConverter.toResponse(result.getRecords().getFirst());
     }
 
 }

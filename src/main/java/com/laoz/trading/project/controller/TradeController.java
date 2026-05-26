@@ -1,5 +1,7 @@
 package com.laoz.trading.project.controller;
 
+import com.laoz.trading.project.common.request.PageRequest;
+import com.laoz.trading.project.common.response.PageResult;
 import com.laoz.trading.project.common.response.Response;
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeAllListResponse;
@@ -8,9 +10,12 @@ import com.laoz.trading.project.dto.TradeResponse;
 import com.laoz.trading.project.dto.TradeSearchResponse;
 import com.laoz.trading.project.dto.TradeUpdateRequest;
 import com.laoz.trading.project.service.TradeService;
+
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * Trade REST API Controller
@@ -72,16 +76,17 @@ public class TradeController {
     }
 
     /**
-     * Search trade records by dynamic conditions
-     * 根据动态条件搜索交易记录
+     * Search trade records by dynamic conditions with pagination
+     * 根据动态条件搜索交易记录（支持分页）
      *
-     * @param request query conditions 查询条件
-     * @return list of matched trade search responses 匹配的交易搜索响应列表
+     * @param pageRequest page request wrapping query conditions and pagination parameters
+     *                    分页请求，包含查询条件和分页参数
+     * @return paged trade search responses 分页后的交易搜索响应
      */
     @PostMapping("/search")
-    public Response<List<TradeSearchResponse>> search(@RequestBody TradeQueryRequest request) {
-        log.info("Search trade records");
-        return Response.success(tradeService.search(request));
+    public Response<PageResult<TradeSearchResponse>> search(@RequestBody PageRequest<TradeQueryRequest> pageRequest) {
+        log.info("Search trade records, pageIndex: {}, pageSize: {}", pageRequest.getPageIndex(), pageRequest.getPageSize());
+        return Response.success(tradeService.search(pageRequest));
     }
 
     /**

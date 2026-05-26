@@ -1,6 +1,7 @@
 package com.laoz.trading.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.laoz.trading.project.dto.TradeQueryRequest;
 import com.laoz.trading.project.entity.TradeEntity;
 import org.apache.ibatis.annotations.Mapper;
@@ -34,13 +35,14 @@ public interface TradeMapper extends BaseMapper<TradeEntity> {
     BigDecimal sum();
 
     /**
-     * Search trade records by dynamic conditions
-     * 根据动态条件搜索交易记录
+     * Search trade records by dynamic conditions with pagination
+     * 根据动态条件搜索交易记录（支持分页）
      *
+     * @param page    pagination object 分页对象
      * @param request query conditions 查询条件
-     * @return list of matched trade entities 匹配的交易实体列表
+     * @return paged trade entities 分页后的交易实体列表
      */
-    List<TradeEntity> search(@Param("request") TradeQueryRequest request);
+    Page<TradeEntity> search(Page<TradeEntity> page, @Param("request") TradeQueryRequest request);
 
     /**
      * Count records by creation date
