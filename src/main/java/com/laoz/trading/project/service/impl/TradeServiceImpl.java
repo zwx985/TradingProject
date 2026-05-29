@@ -1,6 +1,7 @@
 package com.laoz.trading.project.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.laoz.trading.project.common.request.PageRequest;
 import com.laoz.trading.project.common.response.PageResult;
 import com.laoz.trading.project.converter.TradeConverter;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -37,6 +39,13 @@ public class TradeServiceImpl implements TradeService {
     @Resource
     private TradeMapper tradeMapper;
 
+    /**
+     * Result holder for maximum cumulative profit calculation
+     * 最大累计收益计算结果容器
+     */
+    private record MaxCumulativeResult(BigDecimal amount, LocalDate date) {
+    }
+
     @Override
     public TradeAllListResponse allList() {
         log.info("Start querying all trade records");
@@ -48,8 +57,11 @@ public class TradeServiceImpl implements TradeService {
         List<TradeResponse> result = entityList.stream()
                 .map(TradeConverter::toResponse)
                 .toList();
-        log.info("Found {} trade records", result.size());
-        return new TradeAllListResponse(result.size(), sum(), result);
+
+        MaxCumulativeResult maxResult = calculateMaxCumulative(entityList);
+        TradeAllListResponse response = new TradeAllListResponse(result.size(), sum(), result, maxResult.amount(), maxResult.date());
+        log.info("Found {} trade records, max cumulative profit: {} on {}", result.size(), maxResult.amount(), maxResult.date());
+        return response;
     }
 
     @Override
@@ -133,6 +145,31 @@ public class TradeServiceImpl implements TradeService {
             return null;
         }
         return TradeConverter.toResponse(result.getRecords().getFirst());
+    }
+
+    /**
+     * Calculate maximum cumulative profit (prefix sum) from trade records.
+     * Records are sorted by createTime ascending before accumulation.
+     * 根据交易记录计算最大累计收益（前缀和）。记录会按创建日期升序排序后累加。
+     *
+     * @param entityList trade entity list 交易实体列表
+     * @return max cumulative amount and its corresponding date 最大累计金额及对应日期
+     */
+    private MaxCumulativeResult calculateMaxCumulative(List<TradeEntity> entityList) {
+        BigDecimal cumulative = BigDecimal.ZERO;
+        BigDecimal maxCumulative = null;
+        LocalDate maxCumulativeDate = null;
+        List<TradeEntity> sorted = entityList.stream()
+                .sorted(Comparator.comparing(TradeEntity::getCreateTime))
+                .toList();
+        for (TradeEntity entity : sorted) {
+            cumulative = cumulative.add(entity.getAmount());
+            if (maxCumulative == null || cumulative.compareTo(maxCumulative) > 0) {
+                maxCumulative = cumulative;
+                maxCumulativeDate = entity.getCreateTime();
+            }
+        }
+        return new MaxCumulativeResult(maxCumulative, maxCumulativeDate);
     }
 
 }
