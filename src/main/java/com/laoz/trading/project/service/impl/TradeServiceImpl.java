@@ -1,10 +1,12 @@
 package com.laoz.trading.project.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
 import com.laoz.trading.project.common.request.PageRequest;
 import com.laoz.trading.project.common.response.PageResult;
 import com.laoz.trading.project.converter.TradeConverter;
+import com.laoz.trading.project.dto.MaxCumulativeProfit;
+import com.laoz.trading.project.dto.MaxDailyProfit;
+import com.laoz.trading.project.dto.MaxSubarrayProfit;
 import com.laoz.trading.project.dto.TradeAddRequest;
 import com.laoz.trading.project.dto.TradeAllListResponse;
 import com.laoz.trading.project.dto.TradeQueryRequest;
@@ -15,11 +17,8 @@ import com.laoz.trading.project.entity.TradeEntity;
 import com.laoz.trading.project.mapper.TradeMapper;
 import com.laoz.trading.project.service.TradeService;
 import com.laoz.trading.project.util.IDUtils;
-
 import jakarta.annotation.Resource;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,13 +38,6 @@ public class TradeServiceImpl implements TradeService {
     @Resource
     private TradeMapper tradeMapper;
 
-    /**
-     * Result holder for maximum cumulative profit calculation
-     * 最大累计收益计算结果容器
-     */
-    private record MaxCumulativeResult(BigDecimal amount, LocalDate date) {
-    }
-
     @Override
     public TradeAllListResponse allList() {
         log.info("Start querying all trade records");
@@ -58,9 +50,16 @@ public class TradeServiceImpl implements TradeService {
                 .map(TradeConverter::toResponse)
                 .toList();
 
-        MaxCumulativeResult maxResult = calculateMaxCumulative(entityList);
-        TradeAllListResponse response = new TradeAllListResponse(result.size(), sum(), result, maxResult.amount(), maxResult.date());
-        log.info("Found {} trade records, max cumulative profit: {} on {}", result.size(), maxResult.amount(), maxResult.date());
+        MaxCumulativeProfit maxCumulative = calculateMaxCumulative(entityList);
+        MaxDailyProfit maxDaily = calculateMaxDailyProfit(entityList);
+        MaxSubarrayProfit maxSubarray = calculateMaxSubarrayProfit(entityList);
+        TradeAllListResponse response = new TradeAllListResponse(
+                result.size(), sum(), result, maxCumulative, maxDaily, maxSubarray);
+        log.info("Found {} trade records, max cumulative: {} on {}, max daily: {} on {}, max subarray: {} from {} to {}",
+                result.size(),
+                maxCumulative.getAmount(), maxCumulative.getDate(),
+                maxDaily.getAmount(), maxDaily.getDate(),
+                maxSubarray.getAmount(), maxSubarray.getStartDate(), maxSubarray.getEndDate());
         return response;
     }
 
@@ -155,7 +154,7 @@ public class TradeServiceImpl implements TradeService {
      * @param entityList trade entity list 交易实体列表
      * @return max cumulative amount and its corresponding date 最大累计金额及对应日期
      */
-    private MaxCumulativeResult calculateMaxCumulative(List<TradeEntity> entityList) {
+    private MaxCumulativeProfit calculateMaxCumulative(List<TradeEntity> entityList) {
         BigDecimal cumulative = BigDecimal.ZERO;
         BigDecimal maxCumulative = null;
         LocalDate maxCumulativeDate = null;
@@ -169,7 +168,65 @@ public class TradeServiceImpl implements TradeService {
                 maxCumulativeDate = entity.getCreateTime();
             }
         }
-        return new MaxCumulativeResult(maxCumulative, maxCumulativeDate);
+        return new MaxCumulativeProfit(maxCumulative, maxCumulativeDate);
+    }
+
+    /**
+     * Calculate maximum single-day profit from trade records.
+     * 计算单日最大收益。
+     *
+     * @param entityList trade entity list 交易实体列表
+     * @return max single-day amount and its corresponding date 最大单日金额及对应日期
+     */
+    private MaxDailyProfit calculateMaxDailyProfit(List<TradeEntity> entityList) {
+        TradeEntity maxEntity = entityList.stream()
+                .max(Comparator.comparing(TradeEntity::getAmount))
+                .orElse(null);
+        if (maxEntity == null) {
+            return new MaxDailyProfit(null, null);
+        }
+        return new MaxDailyProfit(maxEntity.getAmount(), maxEntity.getCreateTime());
+    }
+
+    /**
+     * Calculate maximum subarray profit using Kadane's algorithm.
+     * Records are sorted by createTime ascending before processing.
+     * 使用 Kadane 算法计算最大子数组收益。记录会按创建日期升序排序后处理。
+     *
+     * @param entityList trade entity list 交易实体列表
+     * @return max subarray sum and its interval dates 最大子数组和及起止日期
+     */
+    private MaxSubarrayProfit calculateMaxSubarrayProfit(List<TradeEntity> entityList) {
+        List<TradeEntity> sorted = entityList.stream()
+                .sorted(Comparator.comparing(TradeEntity::getCreateTime))
+                .toList();
+
+        BigDecimal maxSum = null;
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+
+        BigDecimal currentSum = BigDecimal.ZERO;
+        LocalDate currentStart = null;
+
+        for (TradeEntity entity : sorted) {
+            BigDecimal amount = entity.getAmount();
+            LocalDate date = entity.getCreateTime();
+
+            if (currentSum.compareTo(BigDecimal.ZERO) < 0) {
+                currentSum = amount;
+                currentStart = date;
+            } else {
+                currentSum = currentSum.add(amount);
+            }
+
+            if (maxSum == null || currentSum.compareTo(maxSum) > 0) {
+                maxSum = currentSum;
+                startDate = currentStart;
+                endDate = date;
+            }
+        }
+
+        return new MaxSubarrayProfit(maxSum, startDate, endDate);
     }
 
 }

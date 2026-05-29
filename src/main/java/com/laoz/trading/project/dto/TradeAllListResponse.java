@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -36,22 +35,28 @@ public class TradeAllListResponse {
     private List<TradeResponse> records;
 
     /**
-     * Maximum cumulative profit (prefix sum) up to a certain day
-     * 截止到某日的最大累计收益（前缀和）
+     * Maximum cumulative profit snapshot (prefix sum) up to a certain day
+     * 截止到某日的最大累计收益快照（前缀和）
      */
-    private BigDecimal maxCumulativeAmount;
+    private MaxCumulativeProfit maxCumulativeProfit;
 
     /**
-     * The date on which the maximum cumulative profit occurred
-     * 最大累计收益对应的日期
+     * Maximum single-day profit snapshot
+     * 单日最大收益快照
      */
-    private LocalDate maxCumulativeDate;
+    private MaxDailyProfit maxDailyProfit;
+
+    /**
+     * Maximum subarray profit snapshot (Kadane's algorithm result)
+     * 最大子数组收益快照（Kadane 算法结果）
+     */
+    private MaxSubarrayProfit maxSubarrayProfit;
 
     /**
      * Constructor with basic fields (totalCount, totalAmount, records).
-     * maxCumulativeAmount and maxCumulativeDate are left null and set separately when needed.
+     * Statistics fields are left null and set separately when needed.
      * 基础字段构造器（总条数、总金额、记录列表）。
-     * 最大累计收益及其日期留空，需要时另行设置。
+     * 统计字段留空，需要时另行设置。
      *
      * @param totalCount total number of records / 记录总条数
      * @param totalAmount total sum of amounts / 金额总和
@@ -62,4 +67,5 @@ public class TradeAllListResponse {
         this.totalAmount = totalAmount;
         this.records = records;
     }
+
 }
